@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para mi linda Tini de parte de Lau</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background: #09050b;
+      font-family: 'Playfair Display', serif;
+      color: #f3e5f5;
+      user-select: none;
+    }
+
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-action {
+      background: rgba(25, 12, 25, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      color: #f3d0db;
+      padding: 10px 18px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      letter-spacing: 1.5px;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn-action:hover {
+      background: rgba(212, 175, 55, 0.25);
+      border-color: #d4af37;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .main-container {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 20px;
+    }
+
+    .header-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(2.3rem, 5.5vw, 4rem);
+      color: #f7d6e0;
+      text-shadow: 0 0 15px rgba(247, 214, 224, 0.4), 0 0 30px rgba(212, 175, 55, 0.3);
+      text-align: center;
+      margin-bottom: 30px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeIn 1.2s forwards 0.3s;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 320px;
+      height: 220px;
+      cursor: pointer;
+      perspective: 1000px;
+      margin-bottom: 30px;
+      transition: transform 0.4s ease;
+    }
+
+    @media (min-width: 600px) {
+      .envelope-wrapper {
+        width: 440px;
+        height: 290px;
+      }
+    }
+
+    .envelope-wrapper:hover {
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    .envelope {
+      width: 100%;
+      height: 100%;
+      background: #2b1120;
+      border-radius: 8px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(182, 80, 110, 0.25);
+      position: relative;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: #38162b;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top;
+      transition: transform 0.8s ease, z-index 0.2s ease;
+      z-index: 5;
+      border-top: 1px solid rgba(212, 175, 55, 0.5);
+    }
+
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #200c17;
+      clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+      z-index: 4;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 58px;
+      height: 58px;
+      background: radial-gradient(circle, #e6c667 0%, #b8860b 70%, #7a5800 100%);
+      border-radius: 50%;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+      border: 2px solid #ecd380;
+      transition: opacity 0.5s ease;
+    }
+
+    .wax-seal span {
+      font-family: 'Cinzel', serif;
+      font-weight: bold;
+      color: #3a2600;
+      font-size: 1.4rem;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .click-hint {
+      position: absolute;
+      bottom: -38px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      letter-spacing: 2px;
+      color: #d4af37;
+      text-transform: uppercase;
+      white-space: nowrap;
+      animation: pulse 1.8s infinite;
+    }
+
+    .letter-container {
+      max-width: 720px;
+      width: 92%;
+      background: linear-gradient(135deg, #180b16 0%, #100610 100%);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      border-radius: 12px;
+      padding: 45px 30px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 35px rgba(182, 80, 110, 0.2);
+      position: relative;
+      display: none;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
+      margin-top: 10px;
+    }
+
+    .letter-container::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .letter-header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 1px dashed rgba(212, 175, 55, 0.35);
+      padding-bottom: 20px;
+    }
+
+    .letter-header h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      color: #f7d6e0;
+      font-weight: normal;
+    }
+
+    .poem-content {
+      font-size: 1.08rem;
+      line-height: 1.9;
+      color: #ebd7e2;
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .poem-verse {
+      margin-bottom: 25px;
+    }
+
+    .poem-verse p {
+      margin-bottom: 6px;
+    }
+
+    .letter-footer {
+      margin-top: 40px;
+      text-align: center;
+      border-top: 1px dashed rgba(212, 175, 55, 0.35);
+      padding-top: 25px;
+    }
+
+    .signature {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.6rem;
+      color: #d4af37;
+    }
+
+    .open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .open .wax-seal {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .open .click-hint {
+      display: none;
+    }
+
+    /* Personajes Flotantes Interactivos */
+    .character-container {
+      position: fixed;
+      bottom: 25px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .char-left {
+      left: 20px;
+      animation: floatLeft 4s ease-in-out infinite;
+    }
+
+    .char-right {
+      right: 20px;
+      animation: floatRight 4.5s ease-in-out infinite;
+    }
+
+    .character-avatar {
+      font-size: 3.2rem;
+      filter: drop-shadow(0 8px 15px rgba(0,0,0,0.6));
+      transition: transform 0.2s ease;
+    }
+
+    .character-container:hover .character-avatar {
+      transform: scale(1.2) rotate(8deg);
+    }
+
+    .char-badge {
+      background: rgba(212, 175, 55, 0.9);
+      color: #2b1120;
+      font-family: 'Cinzel', serif;
+      font-weight: bold;
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      margin-bottom: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      animation: pulse 1.5s infinite;
+      white-space: nowrap;
+    }
+
+    /* Elementos flotantes de besitos y frases */
+    .kiss-popup, .phrase-popup {
+      position: fixed;
+      pointer-events: none;
+      z-index: 200;
+      animation: floatUpAndFade 2.2s ease-out forwards;
+      font-family: 'Great Vibes', cursive;
+    }
+
+    .kiss-popup {
+      font-size: 2.2rem;
+    }
+
+    .phrase-popup {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: #fff;
+      background: rgba(43, 17, 32, 0.95);
+      border: 1px solid #d4af37;
+      padding: 10px 18px;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+    }
+
+    @keyframes floatLeft {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-12px) rotate(3deg); }
+    }
+
+    @keyframes floatRight {
+      0%, 100% { transform: translateY(0) rotate(3deg); }
+      50% { transform: translateY(-14px) rotate(-3deg); }
+    }
+
+    @keyframes floatUpAndFade {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.6);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-120px) scale(1);
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .char-left { left: 10px; }
+      .char-right { right: 10px; }
+      .character-avatar { font-size: 2.5rem; }
+      .char-badge { font-size: 0.6rem; padding: 2px 6px; }
+    }
+
+    @media (max-width: 480px) {
+      .letter-container {
+        padding: 30px 18px;
+      }
+      .poem-content {
+        font-size: 0.98rem;
+        line-height: 1.8;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <audio id="bgAudio" loop preload="auto">
+    <source src="https://ia801503.us.archive.org/15/items/lana-del-rey-salvatore-audio/Lana%20Del%20Rey%20-%20Salvatore%20%28Audio%29.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="top-bar">
+    <button class="btn-action" id="musicBtn" onclick="toggleAudio()">
+      <span id="musicIcon">🎵</span> <span id="musicText">Salvatore</span>
+    </button>
+    <button class="btn-action" onclick="resetLetter()">
+      🔄 Volver a abrir
+    </button>
+  </div>
+
+  <!-- Personaje Izquierdo -->
+  <div class="character-container char-left" onclick="triggerCharAction(event, 'left')">
+    <div class="char-badge">¡Presióname!</div>
+    <div class="character-avatar">🐱✨</div>
+  </div>
+
+  <!-- Personaje Derecho -->
+  <div class="character-container char-right" onclick="triggerCharAction(event, 'right')">
+    <div class="char-badge">¡Tócame!</div>
+    <div class="character-avatar">🧸💖</div>
+  </div>
+
+  <div class="main-container">
+    <h1 class="header-title" id="mainHeader">Para mi linda Tini de parte de Lau</h1>
+
+    <div class="envelope-wrapper" id="envelopeWrapper" onclick="openLetter()">
+      <div class="envelope" id="envelope">
+        <div class="envelope-flap"></div>
+        <div class="envelope-pocket"></div>
+        <div class="wax-seal">
+          <span>T</span>
+        </div>
+      </div>
+      <div class="click-hint">Toca para abrir la carta</div>
+    </div>
+
+    <div class="letter-container" id="letterContainer">
+      <div class="letter-header">
+        <h2>Para mi linda Tini</h2>
+      </div>
+
+      <div class="poem-content">
+        <div class="poem-verse">
+          <p><strong>23/10/2026,</strong></p>
+          <p>y en este breve umbral donde cambia la jornada,</p>
+          <p>te escribo con calma y sin falso derroche,</p>
+          <p>para llegar primero con el alma templada.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Sé que aprecias las letras y el peso de las palabras,</p>
+          <p>que habitas mundos de tinta, historias y razón,</p>
+          <p>por eso busco el verso donde tu mente labras,</p>
+          <p>para hablarte con pausa, desde el propio corazón.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Eres de esas presencias que enriquecen el camino,</p>
+          <p>alguien de quien se aprende con solo conversar,</p>
+          <p>y valoro este cruce noble de nuestro destino,</p>
+          <p>la fortuna sincera de poderte frecuentar.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Nuestra amistad no necesita de excesos ni promesas,</p>
+          <p>basta con la certeza de un apoyo fiel y sabio,</p>
+          <p>aquí estoy para ti, Tini, entre risas y certezas,</p>
+          <p>con el afecto genuino que se asoma en cada labio.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Hoy sumas un año más a tu historia tan nutrida,</p>
+          <p>de capítulos nuevos, de metas por alcanzar,</p>
+          <p>de vivencias que moldean con gracia toda tu vida</p>
+          <p>y de un criterio firme que es un gusto admirar.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Que este ciclo te encuentre escribiendo tus mejores días,</p>
+          <p>con proyectos firmes y la mente clara y dispuesta,</p>
+          <p>cruzando con altura todas las travesías,</p>
+          <p>hallando en cada esquina la respuesta correcta.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Te deseo la calma que equilibra las tormentas,</p>
+          <p>la alegría constante que no teme a la rutina,</p>
+          <p>y que cada meta grande que en tu mente te inventas,</p>
+          <p>se convierta en la ruta que felizmente caminas.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Brindo por tu existencia a estas horas silenciosas,</p>
+          <p>con el profundo respeto y el cariño que te tengo,</p>
+          <p>sabiendo que hay personas que vuelven las cosas hermosas</p>
+          <p>y que celebrar tu día es el honor que mantengo.</p>
+        </div>
+
+        <div class="poem-verse">
+          <p>Feliz cumpleaños, mi vieja sapa. Que este año te sea propicio,</p>
+          <p>que disfrutes cada instante con la frente muy en alto,</p>
+          <p>que tu inteligencia brille como tu mejor oficio</p>
+          <p>y que la vida te premie sin escatimar ni un salto.</p>
+        </div>
+      </div>
+
+      <div class="letter-footer">
+        <div class="signature">Con todo mi cariño, Lau ✨</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuración del Audio
+    const audio = document.getElementById('bgAudio');
+    let isPlaying = false;
+
+    // Reiniciar audio a los 2 minutos y medio para mantener solo los primeros minutos en bucle continuo
+    audio.addEventListener('timeupdate', () => {
+      if (audio.currentTime >= 155) { // 2 minutos y 35 segundos
+        audio.currentTime = 0;
+      }
+    });
+
+    function startAudio() {
+      if (!isPlaying) {
+        audio.play().then(() => {
+          isPlaying = true;
+          document.getElementById('musicIcon').innerText = '🔊';
+          document.getElementById('musicText').innerText = 'Sonando';
+        }).catch(() => {
+          console.log('Esperando interacción para reproducer sonido.');
+        });
+      }
+    }
+
+    function toggleAudio() {
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        document.getElementById('musicIcon').innerText = '🔈';
+        document.getElementById('musicText').innerText = 'Salvatore';
+      } else {
+        startAudio();
+      }
+    }
+
+    // Canvas para Pétalos de Sakura y Farolillos Flotantes
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Petal {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -canvas.height;
+        this.size = Math.random() * 10 + 6;
+        this.speedY = Math.random() * 1.2 + 0.8;
+        this.speedX = Math.random() * 0.8 - 0.4;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+        this.opacity = Math.random() * 0.6 + 0.3;
+        this.color = Math.random() > 0.3 ? '#e8b4c8' : '#f7d6e0';
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += Math.sin(this.y * 0.01) + this.speedX;
+        this.rotation += this.rotationSpeed;
+
+        if (this.y > canvas.height + 20) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-this.size, -this.size / 2, -this.size, this.size, 0, this.size);
+        ctx.bezierCurveTo(this.size, this.size, this.size, -this.size / 2, 0, 0);
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    class Lantern {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 100;
+        this.width = Math.random() * 12 + 10;
+        this.height = this.width * 1.4;
+        this.speedY = Math.random() * 0.6 + 0.3;
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.opacity = Math.random() * 0.5 + 0.3;
+      }
+
+      update() {
+        this.y -= this.speedY;
+        this.x += Math.sin(this.y * 0.008) * 0.5 + this.speedX;
+
+        if (this.y < -50) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+
+        const gradient = ctx.createRadialGradient(
+          this.x, this.y, 0,
+          this.x, this.y, this.width * 2
+        );
+        gradient.addColorStop(0, 'rgba(255, 200, 100, 0.4)');
+        gradient.addColorStop(1, 'rgba(255, 100, 50, 0)');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.width * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#d43f3a';
+        ctx.beginPath();
+        ctx.roundRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height, 4);
+        ctx.fill();
+
+        ctx.fillStyle = '#fff4bc';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.width * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    const petals = Array.from({ length: 35 }, () => new Petal());
+    const lanterns = Array.from({ length: 15 }, () => new Lantern());
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      lanterns.forEach(l => {
+        l.update();
+        l.draw();
+      });
+      petals.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Interacción con Personajes Flotantes (Besitos y Frases)
+    const frasesLindas = [
+      "¡Eres la más linda Tini! 💖",
+      "¡Te envío un súper abrazo! 🤗",
+      "¡Que tengas un día mágico! ✨",
+      "¡Eres increíble y muy sabia! 🌟",
+      "¡Muchos besitos para ti! 💋✨",
+      "¡Brillas siempre con luz propia! 👑"
+    ];
+
+    function triggerCharAction(e, side) {
+      e.stopPropagation();
+      startAudio();
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top;
+
+      // Crear besitos/corazones
+      const kiss = document.createElement('div');
+      kiss.className = 'kiss-popup';
+      kiss.innerText = Math.random() > 0.5 ? '💋' : '😘💖';
+      kiss.style.left = `${x - 20}px`;
+      kiss.style.top = `${y - 20}px`;
+      document.body.appendChild(kiss);
+
+      setTimeout(() => kiss.remove(), 2200);
+
+      // Crear Frase Bonita
+      const phrase = document.createElement('div');
+      phrase.className = 'phrase-popup';
+      phrase.innerText = frasesLindas[Math.floor(Math.random() * frasesLindas.length)];
+      phrase.style.left = side === 'left' ? `${x + 20}px` : `${x - 220}px`;
+      phrase.style.top = `${y - 60}px`;
+      document.body.appendChild(phrase);
+
+      setTimeout(()
